@@ -1,0 +1,28 @@
+{
+    "name": "ledat/cbr724",
+    "description": "An experimental library for parsing CBR724-formatted files, used by Banco do Brasil.",
+    "type": "library",
+    "require": {
+        "php": ">=7.0.0"
+    },
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Leda Ferreira",
+            "email": "leda-ferreira@users.noreply.github.com"
+        }
+    ],
+    "keywords": [
+        "CBR724",
+        "Banco do Brasil",
+        "retorno bancário"
+    ],
+    "autoload": {
+        "files": [
+            "library/functions.php"
+        ],
+        "psr-4": {
+            "cbr724\\": "src"
+        }
+    }
+}
