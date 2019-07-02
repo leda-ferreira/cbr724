@@ -21,6 +21,8 @@ namespace cbr724;
 
 /**
  * \cbr724\CBR724.
+ * Listas de códigos encontradas em:
+ * <https://www.bb.com.br/docs/pub/emp/corp/dwn/CodigosCBR724.pdf>.
  */
 class CBR724
 {
