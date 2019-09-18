@@ -3,7 +3,7 @@
     "description": "An experimental library for parsing CBR724-formatted files, used by Banco do Brasil.",
     "type": "library",
     "require": {
-        "php": ">=7.0.0"
+        "php": ">=5.6.0"
     },
     "license": "GPL-3.0-or-later",
     "authors": [

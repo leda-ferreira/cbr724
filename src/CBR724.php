@@ -143,6 +143,11 @@ class CBR724
     private $sections;
 
     /**
+     * @var boolean
+     */
+    private $isCBR724;
+
+    /**
      * Parses a CBR724-formatted text file.
      * @param string $file
      * @return void
@@ -189,6 +194,7 @@ class CBR724
             $result[$column] = trim($matches[$index][0]);
         }
 
+        $this->isCBR724 = $result['formato'] === 'CBR724';
         return $result;
     }
 
@@ -295,10 +301,15 @@ class CBR724
      * @param string $code
      * @return string
      */
-    private function getParser($code) {
+    private function getParser(&$code) {
+        $code_rev = strrev($code);
+        if (isset($code_rev{0}) && $code_rev{0} === '7') {
+            $code = '7';
+        }
+
         $parsers = [
             '7' => 'parseCode7',
-            '11' => 'parseCode11'
+            '11' => 'parseCode11',
         ];
 
         return isset($parsers[$code]) ? $parsers[$code] : 'parseDefault';
@@ -314,13 +325,24 @@ class CBR724
             'header' => $this->parseHeader(),
         ];
 
-        foreach ($this->lines as $line) {
-            $code = trim(substr($line, 0, 2));
-            $parseFunction = $this->getParser($code);
-            $sections[$code][] = $this->{$parseFunction}(substr($line, 2));
-        }
+        if ($this->isCBR724) {
+            foreach ($this->lines as $line) {
+                $code = trim(substr($line, 0, 2));
+                $parseFunction = $this->getParser($code);
+                $sections[$code][] = $this->{$parseFunction}(substr($line, 2));
+            }
 
-        $this->sections = $sections;
+            $this->sections = $sections;
+        }
+    }
+
+    /**
+     * TODO: document this.
+     * @return boolean
+     */
+    public function isCBR724()
+    {
+        return $this->isCBR724;
     }
 
     /**
@@ -329,7 +351,7 @@ class CBR724
      */
     public function getAccountNumber()
     {
-        return $this->sections[28][0][1] ?? null;
+        return isset($this->sections[28][0][1]) ? $this->sections[28][0][1] : null;
     }
 
     /**
@@ -338,7 +360,7 @@ class CBR724
      */
     public function getBankAgency()
     {
-        return $this->sections[28][0][3] ?? null;
+        return isset($this->sections[28][0][3]) ? $this->sections[28][0][3] : null;
     }
 
     /**
@@ -349,10 +371,10 @@ class CBR724
     {
         if (isset($this->sections[-8])) {
             return [
-                'logradouro' => $this->sections[-8][0][1] ?? null,
-                'cidade' => $this->sections[-8][1][2] ?? null,
-                'cep' => $this->sections[-8][1][1] ?? null,
-                'uf' => $this->sections[-8][1][3] ?? null,
+                'logradouro' => isset($this->sections[-8][0][1]) ? $this->sections[-8][0][1] : null,
+                'cidade' => isset($this->sections[-8][1][2]) ? $this->sections[-8][1][2] : null,
+                'cep' => isset($this->sections[-8][1][1]) ? $this->sections[-8][1][1] : null,
+                'uf' => isset($this->sections[-8][1][3]) ? $this->sections[-8][1][3] : null,
             ];
         }
         return null;
@@ -364,7 +386,7 @@ class CBR724
      */
     public function getCompanyName()
     {
-        return $this->sections[28][2][1] ?? null;
+        return isset($this->sections[28][2][1]) ? $this->sections[28][2][1] : null;
     }
 
     /**
@@ -385,7 +407,7 @@ class CBR724
      */
     public function getHeader()
     {
-        return $this->sections['header'] ?? null;
+        return isset($this->sections['header']) ? $this->sections['header'] : null;
     }
 
     /**
@@ -394,7 +416,7 @@ class CBR724
      */
     public function getSubHeader()
     {
-        return $this->sections[11][0] ?? null;
+        return isset($this->sections[11][0]) ? $this->sections[11][0] : null;
     }
 
     /**
@@ -403,7 +425,7 @@ class CBR724
      */
     public function getListOfRecords()
     {
-        return $this->sections[7] ?? null;
+        return isset($this->sections[7]) ? $this->sections[7] : null;
     }
 
     /**
@@ -412,7 +434,7 @@ class CBR724
      */
     public function getState()
     {
-        return $this->sections[28][2][4] ?? null;
+        return isset($this->sections[28][2][4]) ? $this->sections[28][2][4] : null;
     }
 
     /**
@@ -421,6 +443,6 @@ class CBR724
      */
     public function getWalletNumber()
     {
-        return $this->sections[28][0][2] ?? null;
+        return isset($this->sections[28][0][2]) ? $this->sections[28][0][2] : null;
     }
 }
